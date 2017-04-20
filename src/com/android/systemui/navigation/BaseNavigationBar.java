@@ -409,7 +409,11 @@ public abstract class BaseNavigationBar extends LinearLayout implements Navigato
                 return;
             }
             WindowManager wm = (WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE);
-            wm.updateViewLayout(this, lp);
+            try {
+              wm.updateViewLayout(this, lp);
+            } catch (Exception e) {
+              //do nothing
+            }
         }
     }
 
