@@ -420,6 +420,7 @@ public abstract class BaseNavigationBar extends LinearLayout implements Navigato
         }
         mCurrentView = mRotatedViews[rot];
         mCurrentView.setVisibility(View.VISIBLE);
+        setLeftInLandscape(rot == Surface.ROTATION_270);
 
         if (DEBUG) {
             Log.d(TAG, "reorient(): rot=" + mDisplay.getRotation());
