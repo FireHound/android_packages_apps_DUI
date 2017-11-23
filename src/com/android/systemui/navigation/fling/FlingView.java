@@ -35,7 +35,6 @@ import com.android.systemui.navigation.fling.FlingGestureHandler;
 import com.android.systemui.navigation.fling.FlingLogoController;
 import com.android.systemui.navigation.fling.FlingLogoView;
 import com.android.systemui.navigation.fling.FlingRipple;
-import com.android.systemui.navigation.fling.FlingTrails;
 import com.android.systemui.navigation.fling.FlingView;
 import com.android.systemui.navigation.pulse.PulseController;
 import com.android.systemui.navigation.utils.SmartObserver.SmartObservable;
@@ -78,9 +77,6 @@ public class FlingView extends BaseNavigationBar {
         sUris.add(Settings.Secure.getUriFor(Settings.Secure.FLING_LONGPRESS_TIMEOUT));
         sUris.add(Settings.Secure.getUriFor(Settings.Secure.FLING_RIPPLE_ENABLED));
         sUris.add(Settings.Secure.getUriFor(Settings.Secure.FLING_RIPPLE_COLOR));
-        sUris.add(Settings.Secure.getUriFor(Settings.Secure.FLING_TRAILS_ENABLED));
-        sUris.add(Settings.Secure.getUriFor(Settings.Secure.FLING_TRAILS_COLOR));
-        sUris.add(Settings.Secure.getUriFor(Settings.Secure.FLING_TRAILS_WIDTH));
         sUris.add(Settings.Secure.getUriFor(Settings.Secure.FLING_KEYBOARD_CURSORS));
         sUris.add(Settings.Secure.getUriFor(Settings.Secure.FLING_LOGO_OPACITY));
     }
@@ -92,7 +88,6 @@ public class FlingView extends BaseNavigationBar {
     private FlingLogoController mLogoController;
     private boolean mRippleEnabled;
     private FlingRipple mRipple;
-    private FlingTrails mTrails;
     private boolean mKeyboardCursors;
     private float mLogoOpacity;
     private boolean mIsNotificationPanelExpanded;
@@ -160,9 +155,6 @@ public class FlingView extends BaseNavigationBar {
             if (mRippleEnabled) {
                 mRipple.onTouch(FlingView.this, event);
             }
-            if (mTrails.isEnabled()) {
-                mTrails.onTouch(FlingView.this, event);
-            }
             return mGestureDetector.onTouchEvent(event);
         }
     };
@@ -178,7 +170,6 @@ public class FlingView extends BaseNavigationBar {
         //mPm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
 
         mRipple = new FlingRipple(this);
-        mTrails = new FlingTrails(this);
         mLogoController = new FlingLogoController(this);
 
         mSmartObserver.addListener(mActionHandler);
@@ -277,25 +268,6 @@ public class FlingView extends BaseNavigationBar {
         mRipple.updateColor(color);
     }
 
-    private void updateTrailsEnabled() {
-        boolean enabled = Settings.Secure.getIntForUser(mContext.getContentResolver(),
-                Settings.Secure.FLING_TRAILS_ENABLED, 1, UserHandle.USER_CURRENT) == 1;
-        mTrails.setTrailsEnabled(enabled);
-    }
-
-    private void updateTrailsColor() {
-        int color = Settings.Secure.getIntForUser(mContext.getContentResolver(),
-                Settings.Secure.FLING_TRAILS_COLOR, Color.WHITE, UserHandle.USER_CURRENT);
-        mTrails.setTrailColor(color);
-    }
-
-    private void updateTrailsWidth() {
-        int width = Settings.Secure.getIntForUser(mContext.getContentResolver(),
-                Settings.Secure.FLING_TRAILS_WIDTH, FlingTrails.TRAIL_WIDTH_DEFAULT,
-                UserHandle.USER_CURRENT);
-        mTrails.setTrailWidth(width);
-    }
-
     @Override
     public void updateNavbarThemedResources(Resources res) {
 //        mRipple.updateResources(res);
@@ -308,9 +280,6 @@ public class FlingView extends BaseNavigationBar {
 
     private void updateFlingSettings() {
         updateRippleColor();
-        updateTrailsEnabled();
-        updateTrailsColor();
-        updateTrailsWidth();
         int lpTimeout = Settings.Secure.getIntForUser(mContext.getContentResolver(),
                 Settings.Secure.FLING_LONGPRESS_TIMEOUT, FlingGestureDetectorPriv.LP_TIMEOUT_MAX, UserHandle.USER_CURRENT);
         mGestureDetector.setLongPressTimeout(lpTimeout);
@@ -383,7 +352,6 @@ public class FlingView extends BaseNavigationBar {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         mRipple.onSizeChanged(w, h, oldw, oldh);
-        mTrails.onSizeChanged(w, h, oldw, oldh);
     }
 
     @Override
@@ -402,9 +370,6 @@ public class FlingView extends BaseNavigationBar {
         super.onDraw(canvas);
         if (mRippleEnabled) {
             mRipple.onDraw(canvas);
-        }
-        if (mTrails.isEnabled()) {
-            mTrails.onDraw(canvas);
         }
     }
 

@@ -25,9 +25,6 @@ import com.android.internal.utils.du.ActionHandler;
 import com.android.internal.utils.du.Config.ActionConfig;
 import com.android.internal.utils.du.Config.ButtonConfig;
 import com.android.systemui.navigation.Res;
-import com.facebook.rebound.Spring;
-import com.facebook.rebound.SpringConfig;
-import com.facebook.rebound.SpringListener;
 
 import android.animation.ObjectAnimator;
 import android.app.ActivityManager;
@@ -58,11 +55,7 @@ public class SmartButtonView extends ImageView {
 
     private static int sLongPressTimeout;
 
-    // Rebound spring config
-    private static double TENSION = 120;
-    private static double FRICTION = 3;
     public static final int ANIM_STYLE_RIPPLE = 0;
-    public static final int ANIM_STYLE_SPRING = 1;
     public static final int ANIM_STYLE_FLIP = 2;
     public static final int ANIM_STYLE_PIXEL = 3;
     public static final int ANIM_STYLE_PIXEL_HOME = 4;
@@ -82,27 +75,6 @@ public class SmartButtonView extends ImageView {
             mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         return mAudioManager;
     }
-
-    private Spring mSpring;
-    private SpringListener mSpringListener = new SpringListener() {
-
-        @Override
-        public void onSpringActivate(Spring arg0) {}
-
-        @Override
-        public void onSpringAtRest(Spring arg0) {}
-
-        @Override
-        public void onSpringEndStateChange(Spring arg0) {}
-
-        @Override
-        public void onSpringUpdate(Spring spring) {
-            float value = (float) spring.getCurrentValue();
-            float scale = 1f - (value * 0.5f);
-            setScaleX(scale);
-            setScaleY(scale);
-        }
-    };
 
     public SmartButtonView(Context context) {
         this(context, null);
@@ -131,36 +103,25 @@ public class SmartButtonView extends ImageView {
         mAnimStyle = style;
         switch (style) {
             case ANIM_STYLE_RIPPLE:
-                setSpringEnabled(false);
                 setPixelEnabled(false, false, false);
                 setRippleEnabled(true);
                 mFlipAnim = null;
                 break;
-            case ANIM_STYLE_SPRING:
-                setSpringEnabled(true);
-                setPixelEnabled(false, false, false);
-                setRippleEnabled(false);
-                mFlipAnim = null;
-                break;
             case ANIM_STYLE_FLIP:
-                setSpringEnabled(false);
                 setPixelEnabled(false, false, false);
                 setRippleEnabled(false);
                 break;
             case ANIM_STYLE_PIXEL:
-                setSpringEnabled(false);
                 setPixelEnabled(true, false, false);
                 setRippleEnabled(false);
                 mFlipAnim = null;
                 break;
             case ANIM_STYLE_PIXEL_HOME:
-                setSpringEnabled(false);
                 setPixelEnabled(true, true, false);
                 setRippleEnabled(false);
                 mFlipAnim = null;
                 break;
             case ANIM_STYLE_PIXEL_HOME_RIPPLE:
-                setSpringEnabled(false);
                 setPixelEnabled(true, true, true);
                 mFlipAnim = null;
                 break;
@@ -194,24 +155,6 @@ public class SmartButtonView extends ImageView {
         }
     }
 
-    private void setSpringEnabled(boolean enabled) {
-        if (enabled) {
-            mSpring = mHost.getSpringSystem().createSpring();
-            mSpring.addListener(mSpringListener);
-            SpringConfig config = new SpringConfig(TENSION, FRICTION);
-            mSpring.setSpringConfig(config);
-        } else {
-            if (mSpring != null) {
-                if (getScaleX() != 1f || getScaleY() != 1f) {
-                    mSpring.setCurrentValue(0f);
-                }
-                mSpring.removeListener(mSpringListener);
-                mSpring.destroy();
-                mSpring = null;
-            }
-        }
-    }
-
     private void fireActionIfSecure(String action) {
         final boolean keyguardShowing = mHost.isKeyguardShowing();
         if (!keyguardShowing
@@ -226,11 +169,6 @@ public class SmartButtonView extends ImageView {
 
     public void setEditMode(boolean editMode) {
         mInEditMode = editMode;
-        if (editMode && mSpring != null) {
-            if (getScaleX() != 1f || getScaleY() != 1f) {
-                mSpring.setCurrentValue(0f);
-            }
-        }
         if (getParent() != null && getParent() instanceof OpaLayout) {
             OpaLayout opa = (OpaLayout)getParent();
             opa.setEditMode(editMode);
@@ -276,20 +214,10 @@ public class SmartButtonView extends ImageView {
     }
 
     // special case: double tap for screen off we never capture up motion event
-    // reset spring value and add/remove listeners if screen on/off
+    // add/remove listeners if screen on/off
     public void onScreenStateChanged(boolean screenOn) {
         wasConsumed = false;
         setPressed(false);
-        if (mSpring != null) {
-            if (screenOn) {
-                mSpring.addListener(mSpringListener);
-                if (getScaleX() != 1f || getScaleY() != 1f) {
-                    mSpring.setCurrentValue(0f);
-                }
-            } else {
-                mSpring.removeListener(mSpringListener);
-            }
-        }
     }
 
     private void checkAndDoFlipAnim() {
@@ -318,9 +246,6 @@ public class SmartButtonView extends ImageView {
                     opa.startDownAction();
                 }
                 checkAndDoFlipAnim();
-                if (mSpring != null) {
-                    mSpring.setEndValue(1f);
-                }
                 performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
                 playSoundEffect(SoundEffectConstants.CLICK);
                 if (isDoubleTapPending) {
@@ -350,18 +275,12 @@ public class SmartButtonView extends ImageView {
                 if (opa != null) {
                     opa.startCancelAction();
                 }
-                if (mSpring != null) {
-                    mSpring.setEndValue(0f);
-                }
                 break;
             case MotionEvent.ACTION_UP:
                 setPressed(false);
                 checkAndDoFlipAnim();
                 if (opa != null) {
                     opa.startCancelAction();
-                }
-                if (mSpring != null) {
-                    mSpring.setEndValue(0f);
                 }
                 if (hasLongAction()) {
                     removeCallbacks(mCheckLongPress);

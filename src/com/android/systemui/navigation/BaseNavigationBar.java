@@ -40,9 +40,6 @@ import com.android.systemui.R;
 import com.android.internal.utils.du.DUActionUtils;
 import com.android.internal.utils.du.ImageHelper;
 
-import com.facebook.rebound.Spring;
-import com.facebook.rebound.SpringSystem;
-
 import android.animation.LayoutTransition;
 import android.app.StatusBarManager;
 import android.content.ContentResolver;
@@ -103,9 +100,6 @@ public abstract class BaseNavigationBar extends LinearLayout implements Navigato
 
     public NavbarOverlayResources mResourceMap;
 
-    // use access methods to keep state proper
-    private SpringSystem mSpringSystem;
-
     protected boolean mCarMode = false;
     protected boolean mDockedStackExists;
 
@@ -149,7 +143,6 @@ public abstract class BaseNavigationBar extends LinearLayout implements Navigato
         mWm = (WindowManager) context.getSystemService(
                 Context.WINDOW_SERVICE);
         mSmartObserver = new SmartObserver(mHandler, context.getContentResolver());
-        mSpringSystem = SpringSystem.create();
         sIsTablet = !DUActionUtils.navigationBarCanMove();
     }
 
@@ -208,25 +201,6 @@ public abstract class BaseNavigationBar extends LinearLayout implements Navigato
     @Override
     public boolean needsReorient(int rotation) {
         return mCurrentRotation != rotation;
-    }
-
-    public SpringSystem getSpringSystem() {
-        if (mSpringSystem == null) {
-            mSpringSystem = SpringSystem.create();
-        }
-        return mSpringSystem;
-    }
-
-    public void flushSpringSystem() {
-        if (mSpringSystem != null) {
-            for (Spring spring : mSpringSystem.getAllSprings()) {
-                spring.setAtRest();
-                spring.removeAllListeners();
-                spring.destroy();
-            }
-            mSpringSystem.removeAllListeners();
-            mSpringSystem = null;
-        }
     }
 
     protected boolean areAnyHintsActive() {
@@ -370,7 +344,6 @@ public abstract class BaseNavigationBar extends LinearLayout implements Navigato
         if (mPulse != null) {
             mPulse.doUnlinkVisualizer();
         }
-        flushSpringSystem();
         onDispose();
     }
 
