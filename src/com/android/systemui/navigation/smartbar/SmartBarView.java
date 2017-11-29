@@ -35,6 +35,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Handler;
@@ -273,13 +275,14 @@ public class SmartBarView extends BaseNavigationBar {
             Context ctx = getContext();
             KeyButtonDrawable d = null;
             SmartBackButtonDrawable bd = null;
+            Drawable light = null;
+            Drawable dark = null;
             boolean isBackButton = TextUtils.equals(config.getTag(), Res.Softkey.BUTTON_BACK);
             final boolean backAlt = (mNavigationIconHints & StatusBarManager.NAVIGATION_HINT_BACK_ALT) != 0;
-
             if (!config.hasCustomIcon()
                     && config.isSystemAction()) {
-                Drawable light = mResourceMap.getActionDrawable(config.getActionConfig(ActionConfig.PRIMARY).getAction());
-                Drawable dark = mResourceMap.getDarkActionDrawable(config.getActionConfig(ActionConfig.PRIMARY).getAction());
+                light = mResourceMap.getActionDrawable(config.getActionConfig(ActionConfig.PRIMARY).getAction());
+                dark = mResourceMap.getDarkActionDrawable(config.getActionConfig(ActionConfig.PRIMARY).getAction());
                 if (isBackButton) {
                     bd = SmartBackButtonDrawable.create(light, dark);
                     bd.setImeVisible(backAlt);
@@ -289,16 +292,15 @@ public class SmartBarView extends BaseNavigationBar {
                     button.setImageDrawable(d);
                 }
             } else {
+                light = SmartBarHelper.resizeCustomButtonIcon(config.getCurrentIcon(ctx), ctx, mCustomIconScale).mutate();
+                dark = SmartBarHelper.resizeCustomButtonIcon(config.getCurrentIcon(ctx), ctx, mCustomIconScale).mutate();
+                dark.setColorFilter(new PorterDuffColorFilter(0xff353535, PorterDuff.Mode.MULTIPLY));
                 if (isBackButton) {
-                    bd = SmartBackButtonDrawable.create(
-                            SmartBarHelper.resizeCustomButtonIcon(config.getCurrentIcon(ctx), ctx, mCustomIconScale),
-                            null);
+                    bd = SmartBackButtonDrawable.create(light, dark);
                     bd.setImeVisible(backAlt);
                     button.setImageDrawable(bd);
                 } else {
-                    d = KeyButtonDrawable.create(
-                            SmartBarHelper.resizeCustomButtonIcon(config.getCurrentIcon(ctx), ctx, mCustomIconScale),
-                            null);
+                    d = KeyButtonDrawable.create(light, dark);
                     button.setImageDrawable(d);
                 }
             }
