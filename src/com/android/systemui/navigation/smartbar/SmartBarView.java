@@ -43,6 +43,7 @@ import android.os.Handler;
 import android.os.UserHandle;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -102,6 +103,7 @@ public class SmartBarView extends BaseNavigationBar {
         sUris.add(Settings.Secure.getUriFor(Settings.Secure.PULSE_CUSTOM_BUTTONS_OPACITY));
         sUris.add(Settings.Secure.getUriFor(Settings.Secure.SMARTBAR_LONGPRESS_DELAY));
         sUris.add(Settings.Secure.getUriFor(Settings.Secure.SMARTBAR_CUSTOM_ICON_SIZE));
+        sUris.add(Settings.Secure.getUriFor(Settings.Secure.SMARTBAR_DOUBLETAP_SLEEP));
     }
 
     private SmartObservable mObservable = new SmartObservable() {
@@ -128,6 +130,8 @@ public class SmartBarView extends BaseNavigationBar {
             } else if (uri.equals(Settings.Secure.getUriFor(Settings.Secure.SMARTBAR_CUSTOM_ICON_SIZE))) {
                 updateCustomIconSize();
                 updateCurrentIcons();
+            } else if (uri.equals(Settings.Secure.getUriFor(Settings.Secure.SMARTBAR_DOUBLETAP_SLEEP))) {
+                updateNavDoubletapSetting();
             }
         }
     };
@@ -148,10 +152,13 @@ public class SmartBarView extends BaseNavigationBar {
     private float mCustomAlpha;
     private float mCustomIconScale;
     public float mPulseNavButtonsOpacity;
+    private boolean isNavDoubleTapEnabled;
 
     private boolean mIsMediaPlaying;
 
     private AudioManager mAudioManager;
+
+    private GestureDetector mNavDoubleTapToSleep;
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
@@ -195,6 +202,41 @@ public class SmartBarView extends BaseNavigationBar {
         filter.addAction(AudioManager.STREAM_MUTE_CHANGED_ACTION);
         filter.addAction(AudioManager.VOLUME_CHANGED_ACTION);
         context.registerReceiver(mReceiver, filter);
+
+        mNavDoubleTapToSleep = new GestureDetector(context,
+                new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onDoubleTap(MotionEvent e) {
+                ActionHandler.performTask(context, ActionHandler.SYSTEMUI_TASK_SCREENOFF);
+                return true;
+            }
+        });
+    }
+
+    private final OnTouchListener mSmartBarTouchListener = new OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            return isNavDoubleTapEnabled && (mEditor == null || !mEditor.isInEditMode())
+                    ? mNavDoubleTapToSleep.onTouchEvent(event) : true;
+        }
+    };
+
+    @Override
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if (getParent() != null) {
+            final View v = (View)getParent();
+            v.setOnTouchListener(mSmartBarTouchListener);
+        }
+    }
+
+    @Override
+    public void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if (getParent() != null) {
+            final View v = (View)getParent();
+            v.setOnTouchListener(null);
+        }
     }
 
     @Override
@@ -229,6 +271,7 @@ public class SmartBarView extends BaseNavigationBar {
         updateImeHintModeSettings();
         updateContextLayoutSettings();
         updateButtonLongpressDelay();
+        updateNavDoubletapSetting();
     }
 
     @Override
@@ -625,6 +668,11 @@ public class SmartBarView extends BaseNavigationBar {
         getHiddenContext().findViewWithTag(Res.Softkey.MENU_BUTTON).setVisibility(INVISIBLE);
         getHiddenContext().findViewWithTag(Res.Softkey.IME_SWITCHER).setVisibility(INVISIBLE);
         setNavigationIconHints(mNavigationIconHints, true);
+    }
+
+    private void updateNavDoubletapSetting() {
+        isNavDoubleTapEnabled = Settings.Secure.getIntForUser(getContext().getContentResolver(),
+                Settings.Secure.SMARTBAR_DOUBLETAP_SLEEP, 1, UserHandle.USER_CURRENT) == 1;
     }
 
     void recreateButtonLayout(ArrayList<ButtonConfig> buttonConfigs, boolean landscape,
