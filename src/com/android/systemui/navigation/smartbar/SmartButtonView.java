@@ -213,6 +213,12 @@ public class SmartButtonView extends ImageView {
         return mConfig;
     }
 
+    private boolean mIsEmptyFakeButton() {
+        return !hasSingleAction()
+                && !hasLongAction()
+                && !hasDoubleAction();
+    }
+
     // special case: double tap for screen off we never capture up motion event
     // add/remove listeners if screen on/off
     public void onScreenStateChanged(boolean screenOn) {
@@ -230,6 +236,9 @@ public class SmartButtonView extends ImageView {
     }
 
     public boolean onTouchEvent(MotionEvent ev) {
+        if (mIsEmptyFakeButton())
+                return false;
+
         OpaLayout opa = null;
         if (getParent() != null && getParent() instanceof OpaLayout) {
             opa = (OpaLayout)getParent();
