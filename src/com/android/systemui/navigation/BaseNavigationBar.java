@@ -264,7 +264,7 @@ public abstract class BaseNavigationBar extends LinearLayout implements Navigato
                 DUActionUtils.PACKAGE_SYSTEMUI);
     }
 
-    public void setForgroundColor(Drawable drawable) {
+    public void setForegroundColor(Drawable drawable) {
         if (mRot0 != null) {
             mRot0.setForeground(drawable);
         }
