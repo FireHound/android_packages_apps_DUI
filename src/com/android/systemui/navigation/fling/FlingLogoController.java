@@ -54,9 +54,7 @@ import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
 import android.view.animation.LinearInterpolator;
-import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.ImageView;
@@ -89,8 +87,8 @@ public class FlingLogoController implements SmartObservable {
     private boolean mAnimateTouchEnabled;
     private int mLogoColor = -1;
     private int mVisibilityLock;
-    private AnimationSet mShow = getSpinAnimation(LOGO_ANIMATE_SHOW);
-    private AnimationSet mHide = getSpinAnimation(LOGO_ANIMATE_HIDE);
+    private Animation mShow = getSpinAnimation(LOGO_ANIMATE_SHOW);
+    private Animation mHide = getSpinAnimation(LOGO_ANIMATE_HIDE);
 
     public FlingLogoController(FlingView host) {
         mHost = host;
@@ -285,25 +283,17 @@ public class FlingLogoController implements SmartObservable {
         return mLogoConfig.getActionConfig(ActionConfig.PRIMARY).getCurrentCustomIcon(mContext);
     }
 
-    public static AnimationSet getSpinAnimation(int mode) {
+    public static Animation getSpinAnimation(int mode) {
         final boolean makeHidden = mode == LOGO_ANIMATE_HIDE;
         final float from = makeHidden ? 1.0f : 0.0f;
         final float to = makeHidden ? 0.0f : 1.0f;
-        final float fromDeg = makeHidden ? 0.0f : 360.0f;
-        final float toDeg = makeHidden ? 360.0f : 0.0f;
-
-        Animation scale = new ScaleAnimation(from, to, from, to, Animation.RELATIVE_TO_SELF,
+        Animation ani = new ScaleAnimation(from, to, from, to, Animation.RELATIVE_TO_SELF,
                 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        RotateAnimation rotate = new RotateAnimation(fromDeg, toDeg, Animation.RELATIVE_TO_SELF,
-                0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        ani.setInterpolator(new LinearInterpolator());
+        ani.setDuration(150);
+        ani.setFillAfter(true);
 
-        AnimationSet animSet = new AnimationSet(true);
-        animSet.setInterpolator(new LinearInterpolator());
-        animSet.setDuration(150);
-        animSet.setFillAfter(true);
-        animSet.addAnimation(scale);
-        animSet.addAnimation(rotate);
-        return animSet;
+        return ani;
     }
 
     static int[] getAppIconPadding(Context ctx) {
