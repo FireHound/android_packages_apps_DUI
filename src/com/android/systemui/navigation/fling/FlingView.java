@@ -319,9 +319,9 @@ public class FlingView extends BaseNavigationBar {
     }
 
     @Override
-    public void notifyScreenOn(boolean screenOn) {
+    public void notifyScreenStateChange(boolean screenOn) {
         mGestureHandler.onScreenStateChanged(screenOn);
-        super.notifyScreenOn(screenOn);
+        super.notifyScreenStateChange(screenOn);
 
         if (mLogoController.isEnabled()) {
             ImageView currentLogo = getLogoView(getCurrentView());

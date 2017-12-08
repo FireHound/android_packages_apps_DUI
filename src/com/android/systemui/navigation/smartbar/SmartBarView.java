@@ -29,10 +29,8 @@ package com.android.systemui.navigation.smartbar;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.StatusBarManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.graphics.PorterDuff;
@@ -160,28 +158,26 @@ public class SmartBarView extends BaseNavigationBar {
 
     private GestureDetector mNavDoubleTapToSleep;
 
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (AudioManager.STREAM_MUTE_CHANGED_ACTION.equals(intent.getAction())
-                    || (AudioManager.VOLUME_CHANGED_ACTION.equals(intent.getAction()))) {
-                int streamType = intent.getIntExtra(AudioManager.EXTRA_VOLUME_STREAM_TYPE, -1);
-                if (streamType == AudioManager.STREAM_MUSIC) {
-                    boolean muted = isMusicMuted(streamType);
-                    if (mMusicStreamMuted != muted) {
-                        mMusicStreamMuted = muted;
-                        Handler mHandler = new Handler();
-                        mHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                setNavigationIconHints(mNavigationIconHints, true);
-                            }
-                        });
-                    }
+    @Override
+    public void onReceive(Intent intent) {
+        if (AudioManager.STREAM_MUTE_CHANGED_ACTION.equals(intent.getAction())
+                || (AudioManager.VOLUME_CHANGED_ACTION.equals(intent.getAction()))) {
+            int streamType = intent.getIntExtra(AudioManager.EXTRA_VOLUME_STREAM_TYPE, -1);
+            if (streamType == AudioManager.STREAM_MUSIC) {
+                boolean muted = isMusicMuted(streamType);
+                if (mMusicStreamMuted != muted) {
+                    mMusicStreamMuted = muted;
+                    Handler mHandler = new Handler();
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            setNavigationIconHints(mNavigationIconHints, true);
+                        }
+                    });
                 }
             }
         }
-    };
+    }
 
     private boolean isMusicMuted(int streamType) {
         return streamType == AudioManager.STREAM_MUSIC &&
@@ -198,10 +194,6 @@ public class SmartBarView extends BaseNavigationBar {
 
         mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         mMusicStreamMuted = isMusicMuted(AudioManager.STREAM_MUSIC);
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(AudioManager.STREAM_MUTE_CHANGED_ACTION);
-        filter.addAction(AudioManager.VOLUME_CHANGED_ACTION);
-        context.registerReceiver(mReceiver, filter);
 
         mNavDoubleTapToSleep = new GestureDetector(context,
                 new GestureDetector.SimpleOnGestureListener() {
@@ -486,8 +478,8 @@ public class SmartBarView extends BaseNavigationBar {
     }
 
     @Override
-    public void notifyScreenOn(boolean screenOn) {
-        super.notifyScreenOn(screenOn);
+    public void notifyScreenStateChange(boolean screenOn) {
+        super.notifyScreenStateChange(screenOn);
         mEditor.notifyScreenOn(screenOn);
         ViewGroup hidden = (ViewGroup) getHiddenView().findViewWithTag(Res.Common.NAV_BUTTONS);
         for (String buttonTag : mCurrentSequence) {
@@ -579,12 +571,7 @@ public class SmartBarView extends BaseNavigationBar {
 
     @Override
     protected void onDispose() {
-        unsetListeners();
         removeAllViews();
-    }
-
-    private void unsetListeners() {
-        getContext().unregisterReceiver(mReceiver);
     }
 
     @Override
