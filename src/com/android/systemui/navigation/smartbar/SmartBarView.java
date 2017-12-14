@@ -330,7 +330,7 @@ public class SmartBarView extends BaseNavigationBar {
             } else {
                 light = SmartBarHelper.resizeCustomButtonIcon(config.getCurrentIcon(ctx), ctx, mCustomIconScale).mutate();
                 dark = SmartBarHelper.resizeCustomButtonIcon(config.getCurrentIcon(ctx), ctx, mCustomIconScale).mutate();
-                dark.setColorFilter(new PorterDuffColorFilter(0xff353535, PorterDuff.Mode.MULTIPLY));
+                dark.setColorFilter(new PorterDuffColorFilter(0x4D353535, PorterDuff.Mode.SRC_ATOP));
                 if (isBackButton) {
                     bd = SmartBackButtonDrawable.create(light, dark);
                     bd.setImeVisible(backAlt);

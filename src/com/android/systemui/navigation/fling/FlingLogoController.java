@@ -252,7 +252,7 @@ public class FlingLogoController implements SmartObservable {
                 getConfigCustomIcon() != null) {
             light = getBitmapDrawable(mContext, getConfigCustomIcon()).mutate();
             dark = getBitmapDrawable(mContext, getConfigCustomIcon()).mutate();
-            dark.setColorFilter(new PorterDuffColorFilter(0xff353535, PorterDuff.Mode.MULTIPLY));
+            dark.setColorFilter(new PorterDuffColorFilter(0x4D353535, PorterDuff.Mode.SRC_ATOP));
             d = KeyButtonDrawable.create(light, dark);
             return d;
         }
