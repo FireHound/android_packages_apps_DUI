@@ -53,7 +53,6 @@ import android.content.res.Resources;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.net.Uri;
-import android.os.Handler;
 import android.os.UserHandle;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -114,8 +113,6 @@ public class SmartBarEditor extends BaseEditor implements View.OnTouchListener {
     private FrameLayout mEditContainer;
     private View mHidden;
     private Point mOriginPoint = new Point();
-
-    private int mSecondPopupType;
 
     // buttons to animate when changing positions
     private ArrayList<OpaLayout> mSquatters = new ArrayList<>();
@@ -216,25 +213,46 @@ public class SmartBarEditor extends BaseEditor implements View.OnTouchListener {
     };
 
     private void postSecondaryPopup(final int type) {
-        mSecondPopupType = type;
-        final PopupWindow.OnDismissListener listener = new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-                Handler h = new Handler();
-                h.postDelayed(mShowSecondPopup, 100);
-            }
-        };
-        mPopup.mWindow.setOnDismissListener(listener);
         mHost.removeCallbacks(mHidePopupContainer);
-        mPopup.dismiss();
+        refreshPopup(type);
     }
 
-    private final Runnable mShowSecondPopup = new Runnable() {
-        @Override
-        public void run() {
-            showPopup(mSecondPopupType);
+    private void refreshPopup(int type) {
+        final int x = mPopup.getXpos();
+        int navButtonTopY = mPopup.getNavButtonTopY();
+
+        mPopup.clearViews();
+        boolean hasMaxButtons = getHasMaxButtons();
+        String tag = getEditButtonTag();
+        ActionItem item;
+        if (type == POPUP_TYPE_TAP) {
+            for (int i = 1; i < mTapMenuItems.size() + 1; i++) {
+                item = mTapMenuItems.get(i);
+                int id = item.getActionId();
+                if (id == MENU_MAP_ACTIONS_SINGLE_TAP &&
+                        (tag.equals(BACK) || tag.equals(HOME))) {
+                    continue;
+                }
+                item.setSticky(false);
+                mPopup.addActionItem(item);
+            }
+        } else if (type == POPUP_TYPE_ICON) {
+            for (int i = 1; i < mIconMenuItems.size() + 1; i++) {
+                item = mIconMenuItems.get(i);
+                int id = item.getActionId();
+                if (id == MENU_MAP_ICON_ICON_COLOR) {
+                    continue;
+                }
+                item.setSticky(false);
+                mPopup.addActionItem(item);
+            }
         }
-    };
+
+        View newPopupView = mPopup.mWindow.getContentView();
+        newPopupView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        final int height = newPopupView.getMeasuredHeight();
+        mPopup.mWindow.update(x, (navButtonTopY - height), -1, -1);
+    }
 
     public SmartBarEditor(SmartBarView host) {
         super(host);
@@ -597,38 +615,22 @@ public class SmartBarEditor extends BaseEditor implements View.OnTouchListener {
         boolean hasMaxButtons = getHasMaxButtons();
         String tag = getEditButtonTag();
         ActionItem item;
-        if (type == POPUP_TYPE_TAP) {
-            for (int i = 1; i < mTapMenuItems.size() + 1; i++) {
-                item = mTapMenuItems.get(i);
-                int id = item.getActionId();
-                if (id == MENU_MAP_ACTIONS_SINGLE_TAP &&
-                        (tag.equals(BACK) || tag.equals(HOME))) {
-                    continue;
-                }
-                popup.addActionItem(item);
+        for (int i = 1; i < mPrimaryMenuItems.size() + 1; i++) {
+            item = mPrimaryMenuItems.get(i);
+            int id = item.getActionId();
+            if (id == MENU_MAP_ADD && hasMaxButtons) {
+                continue;
             }
-        } else if (type == POPUP_TYPE_ICON) {
-            for (int i = 1; i < mIconMenuItems.size() + 1; i++) {
-                item = mIconMenuItems.get(i);
-                int id = item.getActionId();
-                if (id == MENU_MAP_ICON_ICON_COLOR) {
-                    continue;
-                }
-                popup.addActionItem(item);
+            if (id == MENU_MAP_REMOVE &&
+                    (tag.equals(BACK) || tag.equals(HOME))) {
+                continue;
             }
-        } else {
-            for (int i = 1; i < mPrimaryMenuItems.size() + 1; i++) {
-                item = mPrimaryMenuItems.get(i);
-                int id = item.getActionId();
-                if (id == MENU_MAP_ADD && hasMaxButtons) {
-                    continue;
-                }
-                if (id == MENU_MAP_REMOVE &&
-                        (tag.equals(BACK) || tag.equals(HOME))) {
-                    continue;
-                }
-                popup.addActionItem(item);
+            if (id == MENU_MAP_ACTIONS || id == MENU_MAP_ICON) {
+                item.setSticky(true);
+            } else {
+                item.setSticky(false);
             }
+            popup.addActionItem(item);
         }
         popup.setOnActionItemClickListener(mQuickClickListener);
         popup.mWindow.setOnDismissListener(mPopupDismissListener);
