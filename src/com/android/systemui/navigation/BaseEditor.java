@@ -47,9 +47,9 @@ import android.widget.Toast;
 public abstract class BaseEditor implements Editor {
 
     public static final String INTENT_ACTION_EDIT_CLASS = "com.android.settings";
-    public static final String INTENT_ACTION_EDIT_COMPONENT = "com.abc.settings.ActionPickerDialogActivity";
-    public static final String INTENT_ACTION_ICON_PICKER_COMPONENT = "com.abc.settings.IconPickerActivity";
-    public static final String INTENT_ACTION_GALLERY_PICKER_COMPONENT = "com.abc.settings.IconPickerGallery";
+    public static final String INTENT_ACTION_EDIT_COMPONENT = "com.fh.settings.preferences.ActionPickerDialogActivity";
+    public static final String INTENT_ACTION_ICON_PICKER_COMPONENT = "com.fh.settings.preferences.IconPickerActivity";
+    public static final String INTENT_ACTION_GALLERY_PICKER_COMPONENT = "com.fh.settings.preferences.IconPickerGallery";
     public static final String INTENT_ICON_PICKER = "intent_icon_picker";
     public static final String INTENT_GALLERY_PICKER = "intent_gallery_picker";
     public static final String INTENT_ACTION_PICKER = "intent_action_action_picker";
