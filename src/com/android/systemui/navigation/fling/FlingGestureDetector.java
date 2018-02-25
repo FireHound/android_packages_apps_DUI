@@ -118,6 +118,12 @@ public class FlingGestureDetector {
         void onLongPress(MotionEvent e);
 
         /**
+         * Notified when a long press is finished
+         *
+         */
+        void onFinishedLongPress();
+
+        /**
          * Notified of a fling event when it occurs with the initial on down {@link MotionEvent}
          * and the matching up {@link MotionEvent}. The calculated velocity is supplied along
          * the x and y axis in pixels per second.
@@ -182,6 +188,9 @@ public class FlingGestureDetector {
         }
 
         public void onLongPress(MotionEvent e) {
+        }
+
+        public void onFinishedLongPress() {
         }
 
         public boolean onScroll(MotionEvent e1, MotionEvent e2,
@@ -616,6 +625,7 @@ public class FlingGestureDetector {
                     mHandler.removeMessages(TAP);
                     mHandler.removeMessages(SHOW_PRESS);
                     mHandler.removeMessages(LONG_PRESS);
+                    mListener.onFinishedLongPress();
                     mListener.onFirstScroll();
                 }
                 if (distance > mDoubleTapTouchSlopSquare) {
@@ -671,6 +681,7 @@ public class FlingGestureDetector {
             mDeferConfirmSingleTap = false;
             mHandler.removeMessages(SHOW_PRESS);
             mHandler.removeMessages(LONG_PRESS);
+            mListener.onFinishedLongPress();
             break;
 
         case MotionEvent.ACTION_CANCEL:
