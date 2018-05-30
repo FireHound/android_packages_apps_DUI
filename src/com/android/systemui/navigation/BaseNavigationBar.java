@@ -149,6 +149,8 @@ public abstract class BaseNavigationBar extends LinearLayout implements Navigato
             notifyScreenStateChange(true);
         } else if (Intent.ACTION_SCREEN_OFF.equals(intent.getAction())) {
             notifyScreenStateChange(false);
+        } else if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
+            notifyBootCompleted();
         } else {
             onReceive(intent);
             if (mPulse != null) {
@@ -178,11 +180,13 @@ public abstract class BaseNavigationBar extends LinearLayout implements Navigato
         filter.addAction(PowerManager.ACTION_POWER_SAVE_MODE_CHANGING);
         filter.addAction(Intent.ACTION_SCREEN_ON);
         filter.addAction(Intent.ACTION_SCREEN_OFF);
+        filter.addAction(Intent.ACTION_BOOT_COMPLETED);
         context.registerReceiver(mReceiver, filter);
     }
 
-    // require implementation. Surely they have something to clean up
+    // require implementation
     protected abstract void onDispose();
+    protected abstract void notifyBootCompleted();
 
     // any implementation specific handling can be handled here
     protected void onInflateFromUser() {}
