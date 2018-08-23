@@ -216,6 +216,9 @@ public abstract class BaseNavigationBar extends LinearLayout implements Navigato
         getBarTransitions().updateResources(mResourceMap);
     }
 
+    public void setRotateSuggestionButtonState(boolean visible, boolean skipAnim) {}
+    public void setLastRotation(int rotation) {}
+
     @Override
     public void setControllers(PulseController pulseController) {
         mPulse = pulseController;

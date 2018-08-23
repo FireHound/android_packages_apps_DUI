@@ -56,6 +56,7 @@
     <string name="label_action_media_left">Previous track</string>
     <string name="label_action_media_right">Next track</string>
     <string name="label_action_assistant_sound_search">Google sound search</string>
+    <string name="label_action_rotation">Rotation</string>
 
     <!-- Smartbar -->
     <string name="label_smartbar_actions">Actions</string>

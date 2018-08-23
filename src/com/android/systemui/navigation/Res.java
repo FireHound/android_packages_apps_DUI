@@ -73,6 +73,7 @@ public class Res {
         public static final String BUTTON_OVERVIEW = "smartbar_button_3";
         public static final String MEDIA_ARROW_LEFT = "media_arrow_left";
         public static final String MEDIA_ARROW_RIGHT = "media_arrow_right";
+        public static final String ROTATION_BUTTON = "rotation_button";
     }
 
     public static final class Fling {

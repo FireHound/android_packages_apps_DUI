@@ -127,4 +127,8 @@ public interface Navigator extends PluginListener<NavGesture> {
 
     // get our editor and pipe commands directly to it
     public default Editor getEditor() { return null; }
+
+    // rotation changes from SystemUI
+    public default void setRotateSuggestionButtonState(boolean visible, boolean skipAnim) {}
+    public default void setLastRotation(int rotation) {}
 }

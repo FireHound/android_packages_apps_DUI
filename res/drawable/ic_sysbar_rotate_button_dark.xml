@@ -1,0 +1,8 @@
+<!-- drawable/format_list_bulleted_type.xml -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:height="24dp"
+    android:width="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path android:fillColor="@color/icon_color_dark" android:pathData="m 10.015,9.8169748 -2.77,-1.9075587 2.77,-1.9075586 1.12,0.7712872 -0.85,0.5922385 h 5.16 c 0.72,0 1.31,0.3856436 1.31,0.8676981 V 14.54111 l -1.58,-1.088066 V 8.4534491 h -4.89 l 0.86,0.5922384 z m 3.96,4.3660372 -1.12,0.771287 0.85,0.592238 H 8.825 V 10.546943 L 7.245,9.4519906 v 6.3149144 c 0,0.482055 0.59,0.867698 1.31,0.867698 h 5.16 v 0.0069 l -0.85,0.585352 1.12,0.771287 2.77,-1.907558 z" />
+</vector>
