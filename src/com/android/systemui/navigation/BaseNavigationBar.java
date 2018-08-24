@@ -27,6 +27,7 @@ package com.android.systemui.navigation;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 
+import com.android.systemui.Dependency;
 import com.android.systemui.navigation.Navigator;
 import com.android.systemui.navigation.Res;
 import com.android.systemui.navigation.NavbarOverlayResources;
@@ -35,6 +36,7 @@ import com.android.systemui.navigation.pulse.PulseController.PulseObserver;
 import com.android.systemui.navigation.utils.SmartObserver;
 import com.android.systemui.plugins.statusbar.phone.NavGesture;
 import com.android.systemui.statusbar.phone.BarTransitions;
+import com.android.systemui.statusbar.policy.RotationLockController;
 import com.android.systemui.R;
 
 import com.android.internal.utils.du.DUActionUtils;
@@ -107,6 +109,8 @@ public abstract class BaseNavigationBar extends LinearLayout implements Navigato
 
     protected boolean mCarMode = false;
     protected boolean mDockedStackExists;
+
+    private RotationLockController mRotationLockController;
 
     private class H extends Handler {
         public void handleMessage(Message m) {
@@ -182,6 +186,12 @@ public abstract class BaseNavigationBar extends LinearLayout implements Navigato
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         filter.addAction(Intent.ACTION_BOOT_COMPLETED);
         context.registerReceiver(mReceiver, filter);
+
+        mRotationLockController = Dependency.get(RotationLockController.class);
+    }
+
+    protected RotationLockController getRotationController() {
+        return mRotationLockController;
     }
 
     // require implementation

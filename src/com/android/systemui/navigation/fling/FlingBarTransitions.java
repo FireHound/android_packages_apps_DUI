@@ -64,6 +64,15 @@ public final class FlingBarTransitions extends BarTransitions {
         if (hidden != null && hidden instanceof DarkIntensity) {
             ((DarkIntensity) hidden).setDarkIntensity(darkIntensity);
         }
+
+        Drawable rotationCurrent = mView.getRotationLogoDrawable(false);
+        if (rotationCurrent != null && rotationCurrent instanceof DarkIntensity) {
+            ((DarkIntensity) rotationCurrent).setDarkIntensity(darkIntensity);
+        }
+        Drawable rotationHidden = mView.getRotationLogoDrawable(true);
+        if (rotationHidden != null && rotationHidden instanceof DarkIntensity) {
+            ((DarkIntensity) rotationHidden).setDarkIntensity(darkIntensity);
+        }
     }
 
     @Override

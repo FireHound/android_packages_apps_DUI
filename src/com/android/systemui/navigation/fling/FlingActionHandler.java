@@ -204,6 +204,11 @@ public class FlingActionHandler implements Swipeable, SmartObservable {
 
     @Override
     public void onSingleRightPress() {
+        if (((FlingView)mHost).isRotateButtonVisible()) {
+            ((FlingView)mHost).rotate();
+            return;
+        }
+
         if (mUseKbCursors) {
             ActionHandler.performTask(mContext, ActionHandler.SYSTEMUI_TASK_HOME);
             return;
@@ -308,7 +313,7 @@ public class FlingActionHandler implements Swipeable, SmartObservable {
         mOnTapPreloadedRecents = false;
         for (String flingAction : (isRight? mRightTapActions : mLeftTapActions)) {
             ActionConfig action = (ActionConfig) mActionMap.get(flingAction);
-            if (!mUseKbCursors && action != null && !action.hasNoAction() && action.isActionRecents()) {
+            if (!mUseKbCursors && !((FlingView)mHost).isRotateButtonVisible() && action != null && !action.hasNoAction() && action.isActionRecents()) {
                 ActionHandler.preloadRecentApps();
                 mOnTapPreloadedRecents = true;
                 return;

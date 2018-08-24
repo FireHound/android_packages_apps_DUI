@@ -52,10 +52,13 @@
                 android:layout_weight="0"
                 android:src="@drawable/ic_eos_fling" />
 
-            <Space
+            <ImageView
+                android:id="@+id/rotationLogo"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"/>
+                android:src="@drawable/ic_sysbar_rotate_button"
+                android:layout_weight="1"
+                android:visibility="invisible" />
 
         </LinearLayout>
     </FrameLayout>
@@ -77,10 +80,13 @@
             android:animateLayoutChanges="true"
             >
 
-            <Space
+            <ImageView
+                android:id="@+id/rotationLogo"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"/>
+                android:src="@drawable/ic_sysbar_rotate_button"
+                android:layout_weight="1"
+                android:visibility="invisible" />
 
             <!-- navigation controls -->
             <com.android.systemui.navigation.fling.FlingLogoView

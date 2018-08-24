@@ -38,7 +38,7 @@
             android:clipToPadding="false"
             android:orientation="horizontal" >
 
-            <View
+            <Space
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -52,9 +52,11 @@
                 android:layout_weight="0"
                 android:src="@drawable/ic_eos_fling" />
 
-            <View
+            <ImageView
+                android:id="@+id/rotationLogo"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:src="@drawable/ic_sysbar_rotate_button"
                 android:layout_weight="1"
                 android:visibility="invisible" />
         </LinearLayout>
@@ -77,9 +79,11 @@
             android:clipToPadding="false"
             android:orientation="vertical" >
 
-            <View
+            <ImageView
+                android:id="@+id/rotationLogo"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:src="@drawable/ic_sysbar_rotate_button"
                 android:layout_weight="1"
                 android:visibility="invisible" />
 
@@ -91,7 +95,7 @@
                 android:layout_weight="0"
                 android:src="@drawable/ic_eos_fling_land" />
 
-            <View
+            <Space
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"

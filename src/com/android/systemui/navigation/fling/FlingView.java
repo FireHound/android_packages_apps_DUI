@@ -94,6 +94,9 @@ public class FlingView extends BaseNavigationBar {
 
     private int mNavigationIconHints = 0;
 
+    private boolean mRotateButtonVisible;
+    private int mLastRotation = 0;
+
     private SmartObservable mObservable = new SmartObservable() {
         @Override
         public Set<Uri> onGetUris() {
@@ -344,6 +347,16 @@ public class FlingView extends BaseNavigationBar {
         return getLogoView(hiddenView ? getHiddenView() : getCurrentView()).getDrawable();
     }
 
+    private ImageView getRotationLogoView(View v) {
+        final ViewGroup viewGroup = (ViewGroup) v;
+        ImageView rotationLogoView = (ImageView)viewGroup.findViewById(R.id.rotationLogo);
+        return rotationLogoView;
+    }
+
+    public Drawable getRotationLogoDrawable(boolean hiddenView) {
+        return getRotationLogoView(hiddenView ? getHiddenView() : getCurrentView()).getDrawable();
+    }
+
     @Override
     protected void onInflateFromUser() {
         mGestureHandler.onScreenStateChanged(mScreenOn);
@@ -370,6 +383,59 @@ public class FlingView extends BaseNavigationBar {
     @Override
     public void setNavigationIconHints(int hints) {
         setNavigationIconHints(hints, false);
+    }
+
+    @Override
+    public void setRotateSuggestionButtonState(boolean visible, boolean skipAnim) {
+        mRotateButtonVisible = visible;
+        //skipAnim
+        onRotationButtonStateChange(visible);
+        // this will set also the correct darkintensity for the rotation logo
+        setNavigationIconHints(mNavigationIconHints, true);
+    }
+
+    @Override
+    public void setLastRotation(int rotation) {
+        mLastRotation = rotation;
+    }
+
+    public void rotate() {
+        getRotationController().setRotationLockedAtAngle(true, mLastRotation);
+    }
+
+    public boolean isRotateButtonVisible() {
+        return mRotateButtonVisible;
+    }
+
+    public void onRotationButtonStateChange(boolean visible) {
+        ImageView hidden = getRotationLogoView(getHiddenView());
+        ImageView current = getRotationLogoView(getCurrentView());
+        if (visible) {
+            hidden.setVisibility(View.VISIBLE);
+            current.setVisibility(View.VISIBLE);
+            current.setAlpha(0.0f);
+            current.animate()
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator _a) {
+                        }
+                    })
+                    .alpha(1.0f)
+                    .setDuration(100)
+                    .start();
+        } else {
+            current.animate()
+                    .alpha(0.0f)
+                    .setDuration(100)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator _a) {
+                            hidden.setVisibility(View.INVISIBLE);
+                            current.setVisibility(View.INVISIBLE);
+                        }
+                    })
+                    .start();
+        }
     }
 
     @Override

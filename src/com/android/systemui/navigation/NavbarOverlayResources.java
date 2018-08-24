@@ -31,7 +31,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 
     public class NavbarOverlayResources extends ActionIconResources {
-
 //      public int mOpaque;
 //      public int mSemiTransparent;
 //      public int mTransparent;
@@ -39,6 +38,8 @@ import android.graphics.drawable.Drawable;
         public Drawable mGradient;
         public Drawable mFlingLogo;
         public Drawable mFlingLogoDark;
+        public Drawable mFlingRotationLogo;
+        public Drawable mFlingRotationLogoDark;
         public Drawable mLightsOutLarge;
 
     public NavbarOverlayResources(Context ctx, Resources res) {
@@ -50,8 +51,10 @@ import android.graphics.drawable.Drawable;
         mGradient = res.getDrawable(R.drawable.nav_background);
         mFlingLogo = res.getDrawable(R.drawable.ic_eos_fling);
         mFlingLogoDark = res.getDrawable(R.drawable.ic_eos_fling_dark);
+        mFlingRotationLogo = res.getDrawable(R.drawable.ic_sysbar_rotate_button);
+        mFlingRotationLogoDark = res.getDrawable(R.drawable.ic_sysbar_rotate_button_dark);
         mLightsOutLarge = res.getDrawable(R.drawable.ic_sysbar_lights_out_dot_large);
-        }
+    }
 
     public void updateResources(Resources res) {
         super.updateResources(res);
@@ -64,6 +67,8 @@ import android.graphics.drawable.Drawable;
         mGradient.setBounds(bounds);
         mFlingLogo = res.getDrawable(R.drawable.ic_eos_fling);
         mFlingLogoDark = res.getDrawable(R.drawable.ic_eos_fling_dark);
+        mFlingRotationLogo = res.getDrawable(R.drawable.ic_sysbar_rotate_button);
+        mFlingRotationLogoDark = res.getDrawable(R.drawable.ic_sysbar_rotate_button_dark);
         mLightsOutLarge = res.getDrawable(R.drawable.ic_sysbar_lights_out_dot_large);
     }
 }
