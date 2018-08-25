@@ -428,8 +428,32 @@ public class SmartBarView extends BaseNavigationBar {
     }
 
     private void setRotationButtonVisibility(View currentOrHidden, int visibility) {
-        ViewGroup contextRight = (ViewGroup)currentOrHidden.findViewWithTag(Res.Softkey.CONTEXT_VIEW_RIGHT);
-        contextRight.findViewWithTag(Res.Softkey.ROTATION_BUTTON).setVisibility(visibility);
+        final ViewGroup contextRight = (ViewGroup)currentOrHidden.findViewWithTag(Res.Softkey.CONTEXT_VIEW_RIGHT);
+        View current = contextRight.findViewWithTag(Res.Softkey.ROTATION_BUTTON);
+        if (visibility == View.VISIBLE) {
+            current.setVisibility(View.VISIBLE);
+            current.setAlpha(0.0f);
+            current.animate()
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator _a) {
+                        }
+                    })
+                    .alpha(1.0f)
+                    .setDuration(100)
+                    .start();
+        } else {
+            current.animate()
+                    .alpha(0.0f)
+                    .setDuration(100)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator _a) {
+                            current.setVisibility(View.INVISIBLE);
+                        }
+                    })
+                    .start();
+        }
     }
 
     @Override
