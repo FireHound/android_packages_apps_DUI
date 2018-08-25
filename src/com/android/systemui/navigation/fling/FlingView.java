@@ -420,7 +420,7 @@ public class FlingView extends BaseNavigationBar {
                         public void onAnimationEnd(Animator _a) {
                         }
                     })
-                    .alpha(1.0f)
+                    .alpha(isBarPulseFaded() ? PULSE_LOGO_OPACITY : mLogoOpacity)
                     .setDuration(100)
                     .start();
         } else {
